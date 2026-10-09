@@ -1103,7 +1103,7 @@ cap:'<path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 1
 book:'<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/>',
 roll:'<path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>',
 usd:'<circle cx="12" cy="12" r="10"/><text x="12" y="17" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" font-family="Arial,sans-serif">$</text>',
-rs:'<text x="12" y="20" text-anchor="middle" font-size="22" font-weight="800" font-family="Arial,sans-serif">₹</text>',
+rs:'<text x="12" y="17" text-anchor="middle" font-size="13" font-weight="800" font-family="Arial,sans-serif">Rs</text>',
 card:'<path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>',
 ok:'<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>',
 chart:'<path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>',
@@ -1862,12 +1862,12 @@ function reportCardHTML(st,ex){
   const teacher=u&&T.find(t=>(t.incharge||[]).includes(u.key)),tag=(window.SP_SAVED&&SP.tagline)||'',sess=String(st.sess||CFG.sess||'').replace(/\s*[-–]\s*/,' – '),
   logo=ADM_LOGO?`<img src="${ADM_LOGO}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="#1c3a6b" stroke-width="1.5"><path d="M2 5c3-1 7-1 10 1 3-2 7-2 10-1v14c-3-1-7-1-10 1-3-2-7-2-10-1z M12 6v14"/></svg>`,
   contact=[window.SP&&SP.phone&&(SP.phone+(SP.phone2?' / '+SP.phone2:'')),window.SP&&SP.email].filter(Boolean);
-  return `<div class="rcd"><div class="rcd-head"><div class="rcd-logo">${logo}</div><div class="rcd-school"><h1>${e(CFG.name)}</h1>${tag?`<div class="rcd-tag">${e(tag)}</div>`:''}${CFG.addr?`<p>${e(CFG.addr)}</p>`:''}${contact.length?`<p>${contact.map(x=>e(x)).join(' &nbsp;&nbsp; ')}</p>`:''}</div><div class="rcd-box"><div><small>Academic Session</small><b>${e(sess||'—')}</b></div><div class="rcd-class">Class</div><div><b>${e(label)}</b></div><div class="rcd-rt"><small>Result Type</small><b>${e(acExam(ex).name)}</b></div></div></div><div class="rcd-line"></div>
+  return `<div class="rcd"><div class="rcd-head"><div class="rcd-brand"><div class="rcd-logo">${logo}</div><h1>${e(CFG.name)}</h1></div>${tag?`<div class="rcd-tag">${e(tag)}</div>`:''}${CFG.addr?`<p>${e(CFG.addr)}</p>`:''}${contact.length?`<p>${contact.map(x=>e(x)).join(' &nbsp;&nbsp; ')}</p>`:''}</div><div class="rcd-line"></div>
 <div class="rcd-title"><span></span><h2>Result Card</h2><span></span></div><div class="rcd-sub">${e(acExam(ex).name.toUpperCase())}</div>
 <div class="rcd-info"><div class="rcd-info-l"><h3>Student Information</h3>${[['Roll No.',e(st.roll)],['Student Name',e(st.name)],['Father’s Name',e(st.father||'—')],['Date of Birth',dmy(st.dob)],['Class',e(label)]].map(r=>`<div class="rcd-r"><span>${r[0]}</span><i>:</i><b>${r[1]}</b></div>`).join('')}</div><div class="rcd-photo">${st.photo?`<img src="${st.photo}" alt="">`:`<svg viewBox="0 0 24 24" fill="#8fa3cc"><circle cx="12" cy="8" r="4.5"/><path d="M3 22c0-5 4-8 9-8s9 3 9 8z"/></svg>`}<small>Student Photo</small></div></div>
 ${marks.length?`<table class="rcd-tb"><tr><th>Sr. No.</th><th>Subject</th><th>Max. Marks</th><th>Obtained Marks</th><th>Percentage</th></tr>${marks.map((m,i)=>`<tr><td>${i+1}</td><td style="text-align:left">${e(m.subject)}</td><td>${m.max}</td><td>${m.obtained}</td><td>${Math.round(m.obtained/m.max*100)}%</td></tr>`).join('')}<tr class="rcd-total"><td colspan="2">Total</td><td>${mx}</td><td>${tot}</td><td>${Math.round(pct)}%</td></tr></table>`:'<p class="rcd-none">No marks have been entered for this student in this exam yet.</p>'}
 <div class="rcd-two"><div class="rcd-sum"><h3>Result Summary</h3><table><tr><td>Total Marks</td><td>${mx}</td></tr><tr><td>Obtained Marks</td><td>${tot}</td></tr><tr><td>Percentage</td><td>${mx?Math.round(pct)+'%':'—'}</td></tr><tr><td>Grade</td><td class="rcd-grade">${mx?e(acGrade(tot,mx)):'—'}</td></tr>${pos?`<tr><td>Position in class</td><td>${pos.pos} of ${peers.length}</td></tr>`:''}</table></div><div class="rcd-rem"><h3>Remarks</h3><div class="rcd-rb" contenteditable="true">${mx?e(remark(pct)):''}</div><div class="rcd-ct"><small>Class Teacher</small><i>${teacher?e(teacher.name):''}</i></div></div></div>
-<div class="rcd-sign"><div><span>Principal</span></div><div class="rcd-seal">${ADM_LOGO?`<img src="${ADM_LOGO}" alt="">`:`<b>${e(CFG.name)}</b>`}</div><div><span>Exam Controller</span></div></div>
+<div class="rcd-sign"><div><span>Principal</span></div><div><span>Exam Controller</span></div></div>
 <div class="rcd-foot">${e(tag||CFG.name)}</div></div>`;
 }
 window.reportCardHTML=reportCardHTML;
@@ -1897,6 +1897,152 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 @media(max-width:700px){.rcd-head{flex-wrap:wrap}.rcd-box{width:100%}.rcd-info,.rcd-two{flex-direction:column}.rcd-photo{border-left:0;padding-left:0}.rcd-school h1{font-size:22px}.rcd-title h2{font-size:28px}.rcd-sign{margin:20px 14px 0}.rcd-sign>div:not(.rcd-seal){width:30%}.rcd-tb{font-size:11px}}
 @media print{.rcd{margin:0 auto;border:0;border-radius:0}.printing-ac-module .ac-tab-wrap{width:100%}}
 </style>`);
+})();
+</script>
+<script>
+/* ===== Report card: centered header, A4 print layout, whole-class generate + print/PDF ===== */
+(function(){
+document.head.insertAdjacentHTML('beforeend',`<style>
+.rcd{display:flex;flex-direction:column;padding-bottom:0!important;width:100%}
+.rcd-head{display:block!important;text-align:center;padding:16px 24px 10px!important}
+.rcd-brand{display:flex;align-items:center;justify-content:center;gap:14px}
+.rcd-brand .rcd-logo{width:72px;height:72px}.rcd-brand h1{font-size:32px!important;text-align:left}
+.rcd-head .rcd-tag{margin:6px 0 4px}.rcd-head p{margin:2px 0!important}
+.rcd-foot{position:static!important;margin-top:auto;height:44px!important;padding-left:0!important;background:linear-gradient(100deg,var(--or) 0 18%,var(--nv) 18% 100%)!important}
+.rcd-sign{margin:22px 50px 18px!important}
+.rcd-two>*,.rcd-info>*{min-width:0}
+@media(max-width:700px){.rcd-brand h1{font-size:22px!important}.rcd-brand .rcd-logo{width:52px;height:52px}}
+.rcd-class-note{margin:8px 0;color:var(--mu)}
+</style>`);
+const _rch=window.reportCardHTML;
+window.reportCardHTML=function(st,ex){let h=_rch(st,ex);const n=(h.match(/<tr><td>\d+<\/td><td style="text-align:left">/g)||[]).length,rp=n<=3?16:n<=5?12:n<=7?9:n<=10?6:n<=13?4:2;return h.replace('<div class="rcd">',`<div class="rcd ${n>=10?'rcd-t2':n>=6?'rcd-t1':''}" style="--rp:${rp}px">`)};
+const acNoHead=h=>h.replace(/<div class="tb">.*?<\/div><span style="flex:1"><\/span>.*?Print<\/button><\/div>/,'');
+acCardsV=function(){const exams=AC.types.map(x=>[x.id,x.name]);return acNoHead(acShell('Report Cards','Generate a report card for one student, or for every student of a class.',`<div class="fm ac-form">${acSelect('Exam','ac_card_exam',exams)} ${acSelect('Class','ac_card_class',acClassOpts(true),'','onchange="acFillStudents(\'ac_card_student\',\'ac_card_class\')"')} ${acSelect('Student','ac_card_student',acStudentOpts(''))}<button class="btn" onclick="acPreviewCard()">Preview report card</button><button class="btn" style="background:#16a34a" onclick="acCardsClass()">Generate whole class</button><button class="btn g" onclick="acRcPrint()">Print / Save as PDF</button></div><div id="ac-card-preview"></div>`))};
+AC_PAGES.reportCards=acCardsV;
+function cardsFor(sid,cl){if(sid){const st=acStudents().find(s=>String(acSid(s))===String(sid));return st?[st]:[]}return cl?acStudents().filter(s=>acInClass(s,cl)):[]}
+function render(list,ex,cl){
+  const box=document.getElementById('ac-card-preview');
+  document.body.classList.add('rc-mode');box.innerHTML=(list.length>1?`<p class="rcd-class-note">${list.length} report cards generated${cl?' for Class '+e(cl):''}. Press <b>Print / Save as PDF</b> to print them or save them all as one PDF.</p>`:'')+list.map(s=>reportCardHTML(s,ex)).join('');
+}
+acPreviewCard=function(){const ex=ac_card_exam.value,sid=ac_card_student.value,cl=ac_card_class.value,l=cardsFor(sid,cl);if(!l.length)return toast('Select a student, or a class to generate all its report cards');render(l,ex,cl)};
+window.acCardsClass=function(){const ex=ac_card_exam.value,cl=ac_card_class.value;if(!cl)return toast('Select a class first');const l=cardsFor('',cl);if(!l.length)return toast('No students in this class');ac_card_student.value='';render(l,ex,cl);toast(l.length+' report cards ready')};
+window.acRcPrint=function(){const box=document.getElementById('ac-card-preview');if(!box.querySelector('.rcd'))acPreviewCard();if(!box.querySelector('.rcd'))return;document.body.classList.add('rc-mode');if(!document.getElementById('rc-page')){const st=document.createElement('style');st.id='rc-page';st.textContent='@page{size:A4 portrait;margin:0}';document.body.appendChild(st)}setTimeout(()=>window.print(),150)};
+const _apm=acPrintModule;acPrintModule=function(){if(document.querySelector('#ac-card-preview .rcd'))return acRcPrint();return _apm.apply(this,arguments)};
+const _navRc=nav;nav=function(){document.body.classList.remove('rc-mode');const s=document.getElementById('rc-page');if(s)s.remove();_navRc()};
+})();
+</script>
+<style id="rc-fit">
+.rcd-sum table{table-layout:fixed;width:100%!important;min-width:0!important;max-width:100%;box-sizing:border-box;margin:0!important}.rcd-sum td{word-break:break-word}.rcd-sum,.rcd-rem{min-width:0}
+</style><style id="rc-print">
+@page rcpage{margin:0}
+.rcd-tb td{padding-top:var(--rp,5px);padding-bottom:var(--rp,5px)}
+@media print{
+body.rc-mode{background:#fff!important}
+body.rc-mode #side,body.rc-mode .top,body.rc-mode #lg,body.rc-mode #ov,body.rc-mode #toast,body.rc-mode .ac-module>.tb,body.rc-mode .ac-module .ac-form,body.rc-mode .rcd-class-note{display:none!important}
+body.rc-mode main{margin:0!important;padding:0!important;display:block!important;min-height:0!important}
+body.rc-mode #view,body.rc-mode .ac-module{padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:none!important;max-width:none!important}
+body.rc-mode #ac-card-preview{display:block;margin:0;padding:0}
+body.rc-mode .rcd{page:rcpage;width:100%!important;max-width:none!important;height:296.5mm!important;min-height:0!important;max-height:296.5mm!important;margin:0!important;border:0!important;border-radius:0!important;overflow:hidden;display:flex;flex-direction:column;break-after:page;page-break-after:always;break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:100%}
+body.rc-mode #ac-card-preview .rcd:last-child{break-after:auto;page-break-after:auto}
+body.rc-mode .rcd-head{padding:7mm 10mm 3mm!important}
+body.rc-mode .rcd-brand .rcd-logo{width:64px;height:64px}body.rc-mode .rcd-brand h1{font-size:30px!important}
+body.rc-mode .rcd-title{margin-top:auto}body.rc-mode .rcd-title h2{font-size:32px}body.rc-mode .rcd-sub{margin:2px 0 auto}
+body.rc-mode .rcd-info{margin:0 10mm!important}
+body.rc-mode .rcd-tb{width:calc(100% - 20mm)!important;margin:auto 10mm!important;font-size:13px}
+body.rc-mode .rcd-two{margin:0 10mm!important}
+body.rc-mode .rcd-sign{margin:auto 14mm!important}
+body.rc-mode .rcd-foot{height:12mm!important;margin:0 10mm 7mm!important}
+body.rc-mode .rcd-photo img,body.rc-mode .rcd-photo svg{width:96px;height:106px}
+}
+</style><style id="rc-tiers">
+@media print{
+body.rc-mode .rcd-t1 .rcd-head{padding:5mm 10mm 2mm!important}body.rc-mode .rcd-t1 .rcd-brand .rcd-logo{width:52px;height:52px}body.rc-mode .rcd-t1 .rcd-brand h1{font-size:26px!important}
+body.rc-mode .rcd-t1 .rcd-title h2{font-size:27px}body.rc-mode .rcd-t1 .rcd-photo img,body.rc-mode .rcd-t1 .rcd-photo svg{width:80px;height:88px}body.rc-mode .rcd-t1 .rcd-r{margin:2px 0;font-size:12px}body.rc-mode .rcd-t1 .rcd-info{padding:6px 14px}
+body.rc-mode .rcd-t1 .rcd-sum td{padding:3px 8px;font-size:12px}body.rc-mode .rcd-t1 .rcd-sum,body.rc-mode .rcd-t1 .rcd-rem{padding:8px 10px}body.rc-mode .rcd-t1 .rcd-tb{font-size:12px}
+body.rc-mode .rcd-t2 .rcd-head{padding:3.5mm 10mm 1mm!important}body.rc-mode .rcd-t2 .rcd-brand .rcd-logo{width:40px;height:40px}body.rc-mode .rcd-t2 .rcd-brand h1{font-size:21px!important}
+body.rc-mode .rcd-t2 .rcd-head .rcd-tag{margin:1px 0;font-size:10px}body.rc-mode .rcd-t2 .rcd-head p{font-size:10px}
+body.rc-mode .rcd-t2 .rcd-title h2{font-size:22px}body.rc-mode .rcd-t2 .rcd-title span{width:60px}body.rc-mode .rcd-t2 .rcd-sub{font-size:10px}
+body.rc-mode .rcd-t2 .rcd-info{padding:4px 12px}body.rc-mode .rcd-t2 .rcd h3,body.rc-mode .rcd-t2 h3{font-size:13px;margin-bottom:2px}body.rc-mode .rcd-t2 .rcd-r{margin:1px 0;font-size:11px}
+body.rc-mode .rcd-t2 .rcd-photo img,body.rc-mode .rcd-t2 .rcd-photo svg{width:56px;height:62px;padding:3px}body.rc-mode .rcd-t2 .rcd-photo{gap:2px}
+body.rc-mode .rcd-t2 .rcd-tb{font-size:11px}body.rc-mode .rcd-t2 .rcd-tb th{padding:3px}
+body.rc-mode .rcd-t2 .rcd-sum,body.rc-mode .rcd-t2 .rcd-rem{padding:5px 8px}body.rc-mode .rcd-t2 .rcd-sum td{padding:1px 8px;font-size:11px}body.rc-mode .rcd-t2 .rcd-grade{font-size:14px}body.rc-mode .rcd-t2 .rcd-rb{min-height:24px;padding:4px 8px;font-size:11px}body.rc-mode .rcd-t2 .rcd-ct{margin-top:3px}
+body.rc-mode .rcd-t2 .rcd-sign{font-size:11px}body.rc-mode .rcd-t2 .rcd-foot{height:9mm!important;font-size:12px}
+}
+</style>
+<script id="wp-fixes">
+/* ---- Exam schedule: keep the exam and class you selected after every "Add to schedule" ---- */
+(function(){
+  const _add=acAddSchedule;
+  acAddSchedule=function(){
+    const E=document.getElementById('ac_sc_exam'),C=document.getElementById('ac_sc_class'),ev=E&&E.value,cv=C&&C.value;
+    const r=_add.apply(this,arguments);
+    const E2=document.getElementById('ac_sc_exam'),C2=document.getElementById('ac_sc_class');
+    if(E2&&ev&&[...E2.options].some(o=>o.value===ev))E2.value=ev;
+    if(C2&&cv&&[...C2.options].some(o=>o.value===cv))C2.value=cv;
+    if(E2&&C2)acSchRefreshSubjects();
+    return r;
+  };
+})();
+
+/* ---- Teachers & staff: Excel template + import ---- */
+const TCOLS=['Full Name','Gender','Subject / Role','Qualification','Mobile','Joining Date','Monthly Pay'];
+function tTpl(){
+  if(!window.XLSX)return toast('Excel library not loaded (check internet)');
+  const wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet([TCOLS,
+    ['Sara Ahmed','Female','English','M.A English','0300-1234567','2026-08-01',45000],
+    ['Imran Khan','Male','Accounts Clerk','B.Com','0321-7654321','2026-08-01',30000]]);
+  ws['!cols']=TCOLS.map((c,i)=>({wch:[22,10,22,18,16,14,14][i]}));
+  XLSX.utils.book_append_sheet(wb,ws,'Teachers & Staff');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['One teacher or staff member per row on the "Teachers & Staff" sheet. Delete the two sample rows before importing.'],
+    ['Full Name: required.'],
+    ['Gender: Male or Female.'],
+    ['Subject / Role: required (e.g. Mathematics, Principal, Clerk, Peon).'],
+    ['Qualification: optional.'],
+    ['Mobile: required, format 03XX-XXXXXXX.'],
+    ['Joining Date: YYYY-MM-DD (leave empty for today).'],
+    ['Monthly Pay: required, numbers only (Rs.).'],
+    ['Then open Teachers > Import Excel and choose this file.'],
+    ['Class and subject assignments can be set afterwards with the Edit button of each teacher.']]),'Instructions');
+  XLSX.writeFile(wb,'teachers-staff-import-template.xlsx');
+}
+function tImpDate(v){
+  if(v==null||v==='')return iso();
+  if(typeof v==='number'){const d=XLSX.SSF.parse_date_code(v);if(d)return d.y+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0')}
+  if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);
+  const t=String(v).trim();let m;
+  if(m=t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  if(m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/))return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  return iso();
+}
+async function tImp(f){
+  if(!f)return;
+  try{
+    if(!window.XLSX)return toast('Excel library not loaded (check internet)');
+    const wb=XLSX.read(await f.arrayBuffer()),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+    const get=(r,k)=>{const key=Object.keys(r).find(x=>x.trim().toLowerCase()===k.toLowerCase());return key==null?'':r[key]};
+    let n=0,dup=0,bad=0;
+    rows.forEach(r=>{
+      const name=String(get(r,'Full Name')).trim(),subject=String(get(r,'Subject / Role')).trim(),pay=+String(get(r,'Monthly Pay')).replace(/[^\d.]/g,'');
+      let ph=dg(String(get(r,'Mobile')));if(ph.length===10&&ph[0]==='3')ph='0'+ph;
+      if(!name&&!subject&&!ph)return;
+      if(!name||!subject||!(pay>0)||!/^03\d{9}$/.test(ph)){bad++;return}
+      const phone=ph.slice(0,4)+'-'+ph.slice(4);
+      if(T.some(t=>String(t.name).trim().toLowerCase()===name.toLowerCase()&&dg(String(t.phone||''))===ph)){dup++;return}
+      const g=String(get(r,'Gender')).trim().toLowerCase();
+      T.push({id:'BFT-'+String(Math.max(0,...T.map(x=>parseInt(dg(x.id))||0))+1).padStart(3,'0'),classes:[],pays:[],active:true,name,gender:g==='female'||g==='f'?'Female':'Male',subject,qual:String(get(r,'Qualification')).trim(),phone,joined:tImpDate(get(r,'Joining Date')),pay,subjectAssignments:{}});
+      n++;
+    });
+    const i=document.getElementById('timpf');if(i)i.value='';
+    toast(n+' imported'+(dup?', '+dup+' already existed':'')+(bad?', '+bad+' skipped (name, subject/role, mobile 03XX-XXXXXXX and pay are required)':''));
+    go(cur);
+  }catch(x){toast('Could not read that file')}
+}
+(function(){
+  const _tvi=teachersV;
+  teachersV=function(){
+    return _tvi().replace('Generate pay for all teachers</button>','Generate pay for all teachers</button><button class="btn g" onclick="tTpl()">'+ic('dl')+'Excel Template</button><button class="btn g" onclick="document.getElementById(\'timpf\').click()">'+ic('plus')+'Import Excel</button><input id="timpf" type="file" accept=".xlsx,.xls,.csv" hidden onchange="tImp(this.files[0])">');
+  };
 })();
 </script>
 </body></html>
