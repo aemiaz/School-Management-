@@ -1703,7 +1703,7 @@ spApply();setTimeout(spApply,0);
 <script>
 /* ===== Teacher portal: Results, assigned-subject marks, class incharge ===== */
 (function(){
-const unitsFor=t=>{const cl=new Set((t.classes||[]).map(String));return sectionUnits().filter(u=>cl.has(String(u.n))||(t.incharge||[]).includes(u.key))};
+const unitsFor=t=>{const cl=new Set((t.classes||[]).map(String));return sectionUnits().filter(u=>{const inc=(t.incharge||[]).includes(u.key);if(!cl.has(String(u.n)))return inc;const sa=(t.secAssign||{})[String(u.n)];return inc||!sa||sa.includes(u.sec)})};window.tUnitsFor=unitsFor;
 const isInch=(t,u)=>(t.incharge||[]).includes(u.key);
 const assignedSubs=(t,u)=>{const a=(t.subjectAssignments||{})[String(u.n)];if(a&&a.length)return a.slice();if(t.subjectAssignments&&Object.keys(t.subjectAssignments).length)return[];return t.subject&&(u.subjects||[]).includes(t.subject)?[t.subject]:[]};
 const editSubs=(t,u)=>isInch(t,u)?(u.subjects||[]).slice():assignedSubs(t,u);
@@ -1781,6 +1781,122 @@ const _tes2=teacherEditSave;teacherEditSave=function(id){
   const t=id=='-1'?(T.length>n0?T[T.length-1]:null):tb(id);if(!t)return;
   t.incharge=inc;const units=sectionUnits().filter(u=>inc.includes(u.key)),cl=new Set((t.classes||[]).map(String));units.forEach(u=>{if(!cl.has(String(u.n))){t.classes=[...(t.classes||[]),u.n];cl.add(String(u.n))}});
 };
+})();
+</script>
+<script>
+/* ===== Section-wise teacher assignment, class-wise exam subjects, tabulation sheet, new report card ===== */
+(function(){
+const secsOf=cls=>{const c=C.find(v=>String(v.n)===String(cls));return String(c&&c.sec||'A').split(',').map(x=>x.trim()).filter(Boolean)};
+
+/* ---- 1. teacher form: choose sections of the class ---- */
+window.teacherSecDraft={};
+const _tef3=teacherEditForm;teacherEditForm=function(id){const x=tb(id)||{};h=_tef3(id);teacherSecDraft=JSON.parse(JSON.stringify(x.secAssign||{}));return h};
+var h;
+const _tsc=teacherSubjectChoices;teacherSubjectChoices=function(id){
+  const cls=document.getElementById('tAssignClass')?.value||String(C[0]?.n||''),secs=secsOf(cls),sel=teacherSecDraft[cls]||secs;
+  return `<div class="tb" style="margin:8px 0"><b>Sections of Class ${e(cls)}</b><span style="color:var(--mu)">Tick the sections this teacher is assigned to. Only these sections appear in the teacher's portal.</span></div><div class="subject-checks">${secs.map(sec=>`<label><input type="checkbox" ${sel.includes(sec)?'checked':''} onchange="teacherSecToggle('${e(cls)}','${e(sec)}',this)"><span>Section ${e(sec)}</span></label>`).join('')}</div>`+_tsc(id);
+};
+window.teacherSecToggle=function(cls,sec,el){const all=secsOf(cls),d=(teacherSecDraft[cls]||all).slice(),i=d.indexOf(sec);if(el.checked&&i<0)d.push(sec);if(!el.checked&&i>=0)d.splice(i,1);teacherSecDraft[cls]=all.filter(x=>d.includes(x))};
+const _tes3=teacherEditSave;teacherEditSave=function(id){
+  for(const k of Object.keys(teacherAssignDraft||{})){if((teacherAssignDraft[k]||[]).length&&teacherSecDraft[k]&&!teacherSecDraft[k].length)return toast('Select at least one section for Class '+k)}
+  const n0=T.length,draft=JSON.parse(JSON.stringify(teacherSecDraft));_tes3(id);
+  const t=id=='-1'?(T.length>n0?T[T.length-1]:null):tb(id);if(!t)return;
+  const sa={};(t.classes||[]).forEach(c=>{const all=secsOf(c),d=draft[String(c)];if(d&&d.length&&d.length<all.length)sa[String(c)]=d});t.secAssign=sa;
+};
+
+/* ---- 2. teacher portal shows only assigned sections ---- */
+const scoped=fn=>function(){
+  const t=tch;if(!t||!t.secAssign||!Object.keys(t.secAssign).length||!window.tUnitsFor)return fn.apply(this,arguments);
+  const us=tUnitsFor(t),cl=(t.classes||[]).map(String),full=S.slice(),keep=full.filter(s=>!cl.includes(String(s.cls))||us.some(u=>sectionStudentMatch(s,u.key)));
+  S.length=0;keep.forEach(x=>S.push(x));try{return fn.apply(this,arguments)}finally{S.length=0;full.forEach(x=>S.push(x))}
+};
+['tDash','tStu','tAtt','tAll','teacherClassAttendanceReport','renderTeacherRange','tIdCards'].forEach(n=>{try{if(typeof window[n]==='function')window[n]=scoped(window[n])}catch(_){}});
+
+/* ---- 3. exam schedule: only the subjects of the chosen class ---- */
+const _sso=acSchSubjectOpts;acSchSubjectOpts=function(ex,cl){const u=sectionUnits().find(z=>z.label===cl),l=_sso(ex,cl);return u?l.filter(x=>(u.subjects||[]).includes(x[0])):l};
+const _aes=acEditSchedule;acEditSchedule=function(id){
+  _aes(id);const x=AC.schedule.find(y=>String(y.id)===String(id)),cs=document.getElementById('ac_es_class'),ss=document.getElementById('ac_es_subject');if(!cs||!ss||!x)return;
+  const fill=()=>{const u=sectionUnits().find(z=>z.label===cs.value),cur=ss.value;let l=u?(u.subjects||[]).slice():acSubjects();if(cs.value===x.cls&&!l.includes(x.subject))l.push(x.subject);ss.innerHTML=l.map(s=>`<option value="${e(s)}">${e(s)}</option>`).join('');if(l.includes(cur))ss.value=cur};
+  cs.addEventListener('change',fill);fill();
+};
+
+/* ---- 4. tabulation sheet ---- */
+const unitLbl=cl=>sectionUnits().find(u=>u.label===cl);
+const tabSubjects=(ex,cl,students)=>{const u=unitLbl(cl),ids=new Set(students.map(s=>String(acSid(s)))),base=u?(u.subjects||[]).slice():[];AC.marks.filter(m=>m.examId===ex&&ids.has(String(m.studentId))).forEach(m=>{if(!base.includes(m.subject))base.push(m.subject)});return base};
+function tabData(ex,cl,sid){
+  let list=acStudents().filter(s=>acInClass(s,cl));const classAll=list.slice();if(sid)list=list.filter(s=>String(acSid(s))===String(sid));
+  const subs=tabSubjects(ex,cl,classAll),rowsAll=classAll.map(s=>{let tot=0,mx=0;const cells=subs.map(sub=>{const m=AC.marks.find(x=>x.examId===ex&&String(x.studentId)===String(acSid(s))&&x.subject===sub);if(m){tot+=+m.obtained;mx+=+m.max}return m});return{s,cells,tot,mx,pct:mx?tot/mx*100:null}});
+  const ranked=rowsAll.filter(r=>r.pct!=null).sort((a,b)=>b.pct-a.pct);let p=0;ranked.forEach((r,i)=>{if(i===0||Math.abs(r.pct-ranked[i-1].pct)>1e-9)p=i+1;r.pos=p});
+  return{subs,rows:rowsAll.filter(r=>list.includes(r.s)),n:ranked.length};
+}
+function tabBody(ex,cl,sid){
+  if(!ex||!cl)return '<p style="color:var(--mu)">Choose an exam and a class.</p>';
+  const d=tabData(ex,cl,sid);if(!d.rows.length)return '<p style="color:var(--mu)">No students found.</p>';
+  const logo=ADM_LOGO?`<img src="${ADM_LOGO}" alt="" style="height:44px;width:44px;object-fit:contain">`:'';
+  return `<div class="ac-tab-wrap"><div class="ac-tab-head">${logo}<div><b style="font-size:17px">${e(CFG.name)}</b><br><span>Tabulation Sheet — ${e(acExam(ex).name)} — Class ${e(cl)}${sid?' — '+e(d.rows[0].s.name):''}</span></div></div><div class="tbw"><table class="ac-table"><tr><th>Sr</th><th>Roll</th><th>Student</th>${d.subs.map(s=>`<th>${e(s)}</th>`).join('')}<th>Total</th><th>%</th><th>Grade</th><th>Position</th></tr>${d.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${e(r.s.roll)}</td><td>${e(r.s.name)}</td>${r.cells.map(m=>`<td>${m?`${m.obtained}/${m.max}`:'—'}</td>`).join('')}<td>${r.mx?`${r.tot}/${r.mx}`:'—'}</td><td>${r.pct!=null?r.pct.toFixed(1)+'%':'—'}</td><td><b>${r.mx?e(acGrade(r.tot,r.mx)):'—'}</b></td><td>${r.pos?r.pos+' of '+d.n:'—'}</td></tr>`).join('')}</table></div></div>`;
+}
+function acTabV(){
+  const ex=acActiveExams(),cls=acClassOpts(false);
+  return acShell('Tabulation Sheet','Subject-wise marks sheet for a whole class or for a single student.',`<div class="fm ac-form">${acSelect('Exam','ac_tb_exam',AC.types.map(x=>[x.id,x.name]))} ${acSelect('Class','ac_tb_class',cls,'','onchange="acTabClass()"')} ${acSelect('Student','ac_tb_student',[['','All students in class'],...acStudentOpts(cls[0]?cls[0][0]:'')])}<button class="btn" onclick="acTabShow()">Show sheet</button><button class="btn g" onclick="acTabShow();acPrintModule()">Print</button><button class="btn g" onclick="acTabCsv()">Download CSV</button></div><div id="ac-tab">${tabBody((AC.types[0]||{}).id,cls[0]?cls[0][0]:'','')}</div>`);
+}
+window.acTabClass=function(){const c=ac_tb_class.value;ac_tb_student.innerHTML='<option value="">All students in class</option>'+acStudentOpts(c).map(o=>`<option value="${e(o[0])}">${e(o[1])}</option>`).join('');acTabShow()};
+window.acTabShow=function(){document.getElementById('ac-tab').innerHTML=tabBody(ac_tb_exam.value,ac_tb_class.value,ac_tb_student.value)};
+window.acTabCsv=function(){
+  const ex=ac_tb_exam.value,cl=ac_tb_class.value,d=tabData(ex,cl,ac_tb_student.value);if(!d.rows.length)return toast('Nothing to download');
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"',lines=[['Sr','Roll','Student',...d.subs,'Total','Percentage','Grade','Position'].map(q).join(',')];
+  d.rows.forEach((r,i)=>lines.push([i+1,r.s.roll,r.s.name,...r.cells.map(m=>m?`${m.obtained}/${m.max}`:''),r.mx?`${r.tot}/${r.mx}`:'',r.pct!=null?r.pct.toFixed(1)+'%':'',r.mx?acGrade(r.tot,r.mx):'',r.pos||''].map(q).join(',')));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv'}));a.download=`tabulation-${cl}-${acExam(ex).name}.csv`.replace(/\s+/g,'_');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+AC_PAGES.tabulation=acTabV;
+if(!EXAM_SUBMENUS.some(x=>x[0]==='tabulation')){const i=EXAM_SUBMENUS.findIndex(x=>x[0]==='examResults');EXAM_SUBMENUS.splice(i<0?EXAM_SUBMENUS.length:i+1,0,['tabulation','Tabulation Sheet'])}
+
+/* ---- 5. report card design ---- */
+const remark=p=>p>=85?'Excellent performance! Keep up the outstanding work.':p>=75?'Good performance! Keep up the hard work and continue to strive for excellence.':p>=60?'Satisfactory performance. More effort will bring even better results.':p>=40?'Needs improvement. Regular practice and hard work are required.':'Unsatisfactory result. Please focus on studies and seek guidance from teachers.';
+const dmy=v=>{if(!v)return '—';const m=String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}-${m[2]}-${m[1]}`:e(v)};
+function reportCardHTML(st,ex){
+  const u=sectionUnits().find(z=>sectionStudentMatch(st,z.key)),label=sectionLabel(st.cls,st.sec),
+  marks=AC.marks.filter(x=>x.examId===ex&&String(x.studentId)===String(acSid(st))),order=u?(u.subjects||[]):[];
+  marks.sort((a,b)=>{const i=order.indexOf(a.subject),j=order.indexOf(b.subject);return (i<0?99:i)-(j<0?99:j)});
+  const tot=marks.reduce((a,x)=>a+ +x.obtained,0),mx=marks.reduce((a,x)=>a+ +x.max,0),pct=mx?tot/mx*100:0;
+  const peers=acResultRows(ex,label),pos=acPositions(peers).find(r=>String(acSid(r.st))===String(acSid(st)));
+  const teacher=u&&T.find(t=>(t.incharge||[]).includes(u.key)),tag=(window.SP_SAVED&&SP.tagline)||'',sess=String(st.sess||CFG.sess||'').replace(/\s*[-–]\s*/,' – '),
+  logo=ADM_LOGO?`<img src="${ADM_LOGO}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="#1c3a6b" stroke-width="1.5"><path d="M2 5c3-1 7-1 10 1 3-2 7-2 10-1v14c-3-1-7-1-10 1-3-2-7-2-10-1z M12 6v14"/></svg>`,
+  contact=[window.SP&&SP.phone&&(SP.phone+(SP.phone2?' / '+SP.phone2:'')),window.SP&&SP.email].filter(Boolean);
+  return `<div class="rcd"><div class="rcd-head"><div class="rcd-logo">${logo}</div><div class="rcd-school"><h1>${e(CFG.name)}</h1>${tag?`<div class="rcd-tag">${e(tag)}</div>`:''}${CFG.addr?`<p>${e(CFG.addr)}</p>`:''}${contact.length?`<p>${contact.map(x=>e(x)).join(' &nbsp;&nbsp; ')}</p>`:''}</div><div class="rcd-box"><div><small>Academic Session</small><b>${e(sess||'—')}</b></div><div class="rcd-class">Class</div><div><b>${e(label)}</b></div><div class="rcd-rt"><small>Result Type</small><b>${e(acExam(ex).name)}</b></div></div></div><div class="rcd-line"></div>
+<div class="rcd-title"><span></span><h2>Result Card</h2><span></span></div><div class="rcd-sub">${e(acExam(ex).name.toUpperCase())}</div>
+<div class="rcd-info"><div class="rcd-info-l"><h3>Student Information</h3>${[['Roll No.',e(st.roll)],['Student Name',e(st.name)],['Father’s Name',e(st.father||'—')],['Date of Birth',dmy(st.dob)],['Class',e(label)]].map(r=>`<div class="rcd-r"><span>${r[0]}</span><i>:</i><b>${r[1]}</b></div>`).join('')}</div><div class="rcd-photo">${st.photo?`<img src="${st.photo}" alt="">`:`<svg viewBox="0 0 24 24" fill="#8fa3cc"><circle cx="12" cy="8" r="4.5"/><path d="M3 22c0-5 4-8 9-8s9 3 9 8z"/></svg>`}<small>Student Photo</small></div></div>
+${marks.length?`<table class="rcd-tb"><tr><th>Sr. No.</th><th>Subject</th><th>Max. Marks</th><th>Obtained Marks</th><th>Percentage</th></tr>${marks.map((m,i)=>`<tr><td>${i+1}</td><td style="text-align:left">${e(m.subject)}</td><td>${m.max}</td><td>${m.obtained}</td><td>${Math.round(m.obtained/m.max*100)}%</td></tr>`).join('')}<tr class="rcd-total"><td colspan="2">Total</td><td>${mx}</td><td>${tot}</td><td>${Math.round(pct)}%</td></tr></table>`:'<p class="rcd-none">No marks have been entered for this student in this exam yet.</p>'}
+<div class="rcd-two"><div class="rcd-sum"><h3>Result Summary</h3><table><tr><td>Total Marks</td><td>${mx}</td></tr><tr><td>Obtained Marks</td><td>${tot}</td></tr><tr><td>Percentage</td><td>${mx?Math.round(pct)+'%':'—'}</td></tr><tr><td>Grade</td><td class="rcd-grade">${mx?e(acGrade(tot,mx)):'—'}</td></tr>${pos?`<tr><td>Position in class</td><td>${pos.pos} of ${peers.length}</td></tr>`:''}</table></div><div class="rcd-rem"><h3>Remarks</h3><div class="rcd-rb" contenteditable="true">${mx?e(remark(pct)):''}</div><div class="rcd-ct"><small>Class Teacher</small><i>${teacher?e(teacher.name):''}</i></div></div></div>
+<div class="rcd-sign"><div><span>Principal</span></div><div class="rcd-seal">${ADM_LOGO?`<img src="${ADM_LOGO}" alt="">`:`<b>${e(CFG.name)}</b>`}</div><div><span>Exam Controller</span></div></div>
+<div class="rcd-foot">${e(tag||CFG.name)}</div></div>`;
+}
+window.reportCardHTML=reportCardHTML;
+acCardsV=function(){const exams=AC.types.map(x=>[x.id,x.name]);return acShell('Report Cards','Generate a report card for one student, or for every student of a class.',`<div class="fm ac-form">${acSelect('Exam','ac_card_exam',exams)} ${acSelect('Class','ac_card_class',acClassOpts(true),'','onchange="acFillStudents(\'ac_card_student\',\'ac_card_class\')"')} ${acSelect('Student','ac_card_student',acStudentOpts(''))}<button class="btn" onclick="acPreviewCard()">Preview report card</button><button class="btn g" onclick="acPreviewCard();acPrintModule()">Print</button></div><div id="ac-card-preview"></div>`)};
+AC_PAGES.reportCards=acCardsV;
+acPreviewCard=function(){
+  const ex=ac_card_exam.value,sid=ac_card_student.value,cl=ac_card_class.value,box=document.getElementById('ac-card-preview');
+  let l=[];if(sid){const st=acStudents().find(s=>String(acSid(s))===String(sid));if(st)l=[st]}else if(cl)l=acStudents().filter(s=>acInClass(s,cl));
+  if(!l.length)return toast('Select a student, or a class to generate all its report cards');
+  box.innerHTML=l.map(s=>reportCardHTML(s,ex)).join('');
+};
+document.head.insertAdjacentHTML('beforeend',`<style>
+.ac-tab-head{display:flex;align-items:center;gap:12px;margin:6px 0 10px}.ac-tab-head span{color:var(--mu)}
+.rcd{--nv:#1c3a6b;--or:#f97316;position:relative;max-width:794px;margin:18px auto;background:#fff;color:#1c2b4a;border:1px solid #dfe6f2;border-radius:6px;overflow:hidden;padding:0 0 64px;font-family:inherit;page-break-after:always;break-after:page;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rcd *{box-sizing:border-box}.rcd-head{display:flex;gap:18px;align-items:center;padding:20px 24px 14px}.rcd-logo{width:92px;height:92px;flex:none;display:grid;place-items:center}.rcd-logo img,.rcd-logo svg{max-width:100%;max-height:100%;object-fit:contain}
+.rcd-school{flex:1;min-width:0}.rcd-school h1{margin:0;font-size:30px;line-height:1.1;color:var(--nv)}.rcd-tag{letter-spacing:.2em;font-size:12px;color:var(--nv);margin:6px 0;text-transform:uppercase}.rcd-school p{margin:3px 0;font-size:12px;color:#33415c}
+.rcd-box{width:210px;flex:none;border:1px solid #d6dcea;border-radius:8px;background:#f5f7fc;text-align:center;font-size:12px;padding:6px 0}.rcd-box>div{padding:3px 8px}.rcd-box small{display:block;color:#33415c}.rcd-box b{font-size:15px;color:var(--nv)}.rcd-class{background:var(--or);color:#fff;margin:2px 14px;border-radius:4px;font-size:11px;padding:1px 0!important;font-weight:600}.rcd-rt{border-top:1px solid #d6dcea;margin-top:4px}.rcd-rt b{font-size:13px}
+.rcd-line{height:4px;background:var(--or)}.rcd-title{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:14px}.rcd-title span{width:90px;height:2px;background:var(--or)}.rcd-title h2{margin:0;font-size:38px;color:var(--nv)}.rcd-sub{text-align:center;letter-spacing:.35em;font-size:13px;color:var(--nv);margin:2px 0 14px}
+.rcd-info{display:flex;margin:0 24px 16px;border:1px solid #d6dcea;border-radius:8px;background:#f5f7fc;padding:12px 16px;gap:18px}.rcd-info-l{flex:1}.rcd h3{margin:0 0 8px;font-size:17px;color:var(--or)}.rcd-r{display:flex;gap:10px;font-size:13px;margin:5px 0}.rcd-r span{width:120px;flex:none}.rcd-r i{font-style:normal}.rcd-r b{font-weight:500}
+.rcd-photo{width:150px;flex:none;border-left:1px solid #d6dcea;padding-left:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#33415c}.rcd-photo img,.rcd-photo svg{width:110px;height:120px;object-fit:cover;border-radius:6px;background:#dfe6f4;padding:6px}
+.rcd-tb{width:calc(100% - 48px);margin:0 24px;border-collapse:collapse;font-size:13px;border-radius:8px;overflow:hidden}.rcd-tb th{background:var(--nv);color:#fff;padding:10px;font-weight:600;border-right:1px solid #ffffff44}.rcd-tb td{padding:8px 10px;text-align:center;border:1px solid #e3e8f3}.rcd-tb tr:nth-child(even) td{background:#f3f6fc}.rcd-tb .rcd-total td{background:var(--or)!important;color:#fff;font-weight:700;font-size:15px;border-color:#fff3}.rcd-none{margin:0 24px;color:#667}
+.rcd-two{display:flex;gap:18px;margin:18px 24px 0}.rcd-sum,.rcd-rem{flex:1;border-radius:8px;padding:12px 14px}.rcd-sum{background:#fff4ea;border:1px solid #fbd5b5}.rcd-rem{background:#f5f7fc;border:1px solid #d6dcea}.rcd-rem h3{color:var(--nv)}
+.rcd-sum table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}.rcd-sum td{border:1px solid #e3e8f3;padding:7px 10px}.rcd-sum td:first-child{width:55%}.rcd-grade{color:var(--or);font-weight:800;font-size:18px}
+.rcd-rb{border:1px solid #d6dcea;border-radius:8px;background:#fff;padding:10px 12px;font-size:13px;min-height:62px;line-height:1.5}.rcd-ct{margin-top:10px;border-top:1px solid #d6dcea;padding-top:6px}.rcd-ct small{font-weight:600;font-size:12px;display:block}.rcd-ct i{font-family:'Brush Script MT',cursive;font-size:20px;color:var(--nv)}
+.rcd-sign{display:flex;justify-content:space-between;align-items:flex-end;margin:26px 50px 0}.rcd-sign>div:not(.rcd-seal){width:200px;border-top:1px solid var(--nv);text-align:center;padding-top:6px;font-size:12px;color:var(--nv)}.rcd-seal{width:110px;height:110px;border-radius:50%;border:3px double var(--nv);display:grid;place-items:center;overflow:hidden;padding:10px;text-align:center;font-size:11px;color:var(--nv)}.rcd-seal img{max-width:100%;max-height:100%;object-fit:contain}
+.rcd-foot{position:absolute;left:0;right:0;bottom:0;height:56px;background:linear-gradient(100deg,var(--or) 0 22%,var(--nv) 22% 100%);color:#fff;text-align:center;font-style:italic;font-weight:600;font-size:16px;display:grid;place-items:center;padding-left:18%}
+@media(max-width:700px){.rcd-head{flex-wrap:wrap}.rcd-box{width:100%}.rcd-info,.rcd-two{flex-direction:column}.rcd-photo{border-left:0;padding-left:0}.rcd-school h1{font-size:22px}.rcd-title h2{font-size:28px}.rcd-sign{margin:20px 14px 0}.rcd-sign>div:not(.rcd-seal){width:30%}.rcd-tb{font-size:11px}}
+@media print{.rcd{margin:0 auto;border:0;border-radius:0}.printing-ac-module .ac-tab-wrap{width:100%}}
+</style>`);
 })();
 </script>
 </body></html>
