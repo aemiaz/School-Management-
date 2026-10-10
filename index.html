@@ -115,11 +115,12 @@ h3{margin:0 0 12px;font-size:16px}
 <style id="bf-ui-update">
 /* ===== New login page ===== */
 #lg{background:linear-gradient(180deg,#eaf2fc 0%,#dce8f7 55%,#c8daf1 100%);color:#17316b;overflow:auto;-webkit-overflow-scrolling:touch}
-#lg .lgx{min-height:100%;display:flex;flex-direction:column}
+#lg .lgx{min-height:100%;width:100%;min-width:0;box-sizing:border-box;display:flex;flex-direction:column}
 #lg .lgx-h{display:flex;align-items:center;gap:12px;padding:26px 5vw 0;font-weight:700;font-size:22px;color:#17376e;letter-spacing:.1px}
 #lg .lgx-h svg,#lg .lgx-h img{width:50px;height:38px;flex:none;object-fit:contain}
+#lg .lgx-h span{min-width:0}
 #lg .lgx-m{flex:1;width:100%;max-width:1320px;margin:0 auto;padding:18px 5vw 26px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,470px);gap:clamp(20px,4vw,64px);align-items:center}
-#lg .lgx-art img{display:block;width:100%;max-width:640px;margin:0 auto;-webkit-mask-image:radial-gradient(ellipse at center,#000 70%,transparent 98%);mask-image:radial-gradient(ellipse at center,#000 70%,transparent 98%)}
+#lg .lgx-art img{display:block;width:100%;max-width:640px;margin:0 auto;-webkit-mask-image:radial-gradient(ellipse at center,#000 60%,transparent 96%);mask-image:radial-gradient(ellipse at center,#000 60%,transparent 96%)}
 #lg .lgp{width:100%;max-width:470px;justify-self:center;background:#fff;border-radius:16px;padding:42px 40px 36px;box-shadow:0 18px 50px rgba(30,70,140,.18),0 2px 8px rgba(30,70,140,.08);box-sizing:border-box}
 #lg .lgp h2{margin:0;text-align:center;font-size:32px;line-height:1.15;font-weight:700;color:#17316b}
 #lg .lgp .lgs{margin:10px 0 26px;text-align:center;font-size:17px;color:#2a3f68}
@@ -145,10 +146,11 @@ h3{margin:0 0 12px;font-size:16px}
 #lg .lgx-f .sp{width:1px;align-self:stretch;min-height:40px;background:rgba(120,150,195,.45)}
 #lg .lgx-f::after{content:"";display:block;height:clamp(22px,5vh,52px);background:linear-gradient(180deg,#c3d6ee,#b7cdea)}
 @media(max-width:900px){
- #lg .lgx-m{grid-template-columns:1fr;gap:18px;padding-top:14px}
+ #lg .lgx-m{grid-template-columns:minmax(0,1fr);gap:18px;padding-top:14px}
  #lg .lgx-art{order:2}
  #lg .lgx-art img{max-width:440px}
- #lg .lgx-h{font-size:19px;padding-top:20px}
+ #lg .lgx-h{font-size:clamp(15px,4.6vw,19px);gap:10px;padding-top:20px}
+ #lg .lgx-h svg,#lg .lgx-h img{width:40px;height:30px}
 }
 @media(max-width:640px){
  #lg .lgx-art{display:none}
@@ -168,9 +170,52 @@ h3{margin:0 0 12px;font-size:16px}
 .monthmenu{--mpsel:#eeeeee;top:calc(100% + 6px);padding:6px 0;border:0;border-radius:12px;background:var(--card);box-shadow:0 10px 30px rgba(15,31,61,.18),0 2px 6px rgba(15,31,61,.10);max-height:260px}
 :root[data-theme="dark"] .monthmenu{--mpsel:var(--bd)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .monthmenu{--mpsel:var(--bd)}}
-.monthmenu label{padding:14px 16px;border-bottom:0;font-size:15px;color:var(--tx);transition:background .12s}
+.monthmenu label{grid-template-columns:minmax(0,1fr) 22px;align-items:center;column-gap:12px;padding:14px 16px;border-bottom:1px solid var(--bd);font-size:15px;line-height:1.3;color:var(--tx);transition:background .12s}
+.monthmenu label span,.monthmenu label input{grid-row:1;align-self:center}
+.monthmenu label input{width:20px;min-width:0;max-width:20px;flex:none;height:20px;margin:0;padding:0;justify-self:end;accent-color:var(--pr);cursor:pointer}
 .monthmenu label:hover{background:var(--mpsel)}
 .monthmenu label:has(input:checked){background:var(--mpsel)}
+/* ===== Fee received report ===== */
+.frc .seg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.frc .mth{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.frc .big{font-size:22px}
+/* ===== Online attendance screen ===== */
+.oa{width:min(1000px,100%);margin:0 auto;border:2px solid var(--pr);box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.oa-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;padding-right:34px}
+.oa-top h3{margin:0}
+.oa-top small{color:var(--mu)}
+.oa-clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:22px;color:var(--pr)}
+.oa-seg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.oa-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:start}
+@media(max-width:820px){.oa-grid{grid-template-columns:1fr}}
+.oa .scan{max-width:none;width:100%;margin-bottom:10px}
+.oa-in{display:flex;gap:8px;flex-wrap:wrap}
+.oa-in input{flex:1;min-width:150px}
+.oa-av{border-radius:50%;object-fit:cover;flex:none;display:inline-grid;place-items:center;color:#fff;font-weight:700;overflow:hidden}
+.oa-res{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;border:2px solid var(--bd);background:var(--bg);margin-top:12px;animation:oaPop .3s ease}
+.oa-res.ok{border-color:#16a34a;background:rgba(22,163,74,.09)}
+.oa-res.out{border-color:#f59e0b;background:rgba(245,158,11,.10)}
+.oa-res.dup{border-color:#eab308;background:rgba(234,179,8,.10)}
+.oa-res.bad{border-color:#ef4444;background:rgba(239,68,68,.09)}
+.oa-res.idle{color:var(--mu);border-style:dashed}
+.oa-info{min-width:0;flex:1}
+.oa-info h4{margin:6px 0 2px;font-size:20px;overflow-wrap:anywhere}
+.oa-info small{color:var(--mu);overflow-wrap:anywhere}
+.oa-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.5px;color:#fff;background:#16a34a}
+.oa-res.out .oa-badge{background:#f59e0b}.oa-res.dup .oa-badge{background:#ca8a04}.oa-res.bad .oa-badge{background:#ef4444}
+.oa-time{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px}
+.oa-time small{display:block;font-size:12px;font-weight:600;margin:2px 0 0}
+.oa-lh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.oa-lh b{font-size:16px}
+.oa-list{max-height:58vh;overflow:auto;border:1px solid var(--bd);border-radius:12px}
+.oa-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid var(--bd)}
+.oa-row:first-child{border-top:0}
+.oa-who{min-width:0;flex:1;display:flex;flex-direction:column}
+.oa-who b{overflow-wrap:anywhere}
+.oa-who small{color:var(--mu)}
+.oa-st{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.oa-empty{padding:18px;text-align:center;color:var(--mu)}
+@keyframes oaPop{from{transform:scale(.96);opacity:.4}to{transform:scale(1);opacity:1}}
 </style></head><body>
 <aside id="side"></aside>
 <main>
@@ -2164,6 +2209,266 @@ async function tImp(f){
     document.body.classList.add('authed');
   }
   try{restore()}catch(err){console.error('Session restore failed',err);sDel(SK)}
+})();
+</script>
+<script>
+/* ===== Update: date-wise fee received report + new online attendance screen ===== */
+(function(){
+  const fd=d=>{try{return new Date(d+'T00:00:00').toLocaleDateString('en-GB')}catch(_){return d}};
+
+  /* ---------- Fee received report ---------- */
+  const R={mode:'today',date:'',from:'',to:''};
+  function range(){const t=iso();if(R.mode=='today')return [t,t];if(R.mode=='date'){const d=R.date||t;return [d,d]}let f=R.from||t,to=R.to||t;if(f>to){const x=f;f=to;to=x}return [f,to]}
+  function collect(f,t){
+    const out=[],add=(s,d,amt,disc,kind,r)=>{amt=+amt||0;d=String(d||'').slice(0,10);if(!d||amt<=0||d<f||d>t)return;out.push({s,date:d,amt,disc:+disc||0,kind,method:(r&&r.method)||'-',ref:(r&&r.ref)||'',vno:(r&&r.vno)||''})};
+    S.forEach(s=>{const fe=s.fee||{};
+      Object.keys(fe.rec||{}).forEach(i=>{const r=fe.rec[i];if(r&&r.method!=='Credit')add(s,r.date,r.amt,r.discount,MON[i]+' fee',r)});
+      if(fe.ann&&fe.ann.method!=='Credit')add(s,fe.ann.date,fe.ann.amt,fe.ann.discount,'Annual charges',fe.ann);
+      if(fe.regRec)add(s,fe.regRec.date,fe.regRec.amt,fe.regRec.discount,'Registration fee',fe.regRec);
+      (fe.cl||[]).forEach(c=>add(s,c.date,c.amt,0,'Advance credit',c));
+    });
+    out.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:String(a.s.name).localeCompare(String(b.s.name)));
+    const by={};out.forEach(r=>{const k=r.method||'-';(by[k]=by[k]||{n:0,a:0});by[k].n++;by[k].a+=r.amt});
+    return {rows:out,tot:out.reduce((a,r)=>a+r.amt,0),disc:out.reduce((a,r)=>a+r.disc,0),stu:new Set(out.map(r=>r.s.id)).size,by};
+  }
+  function label(f,t){return R.mode=='today'?'Today ('+fd(f)+')':f==t?fd(f):fd(f)+' to '+fd(t)}
+  window.feeRcvCard=function(){
+    const [f,t]=range(),d=collect(f,t),m=R.mode,seg=(k,n)=>`<button type="button" class="btn ${m==k?'':'g'}" onclick="feeRcvSet('mode','${k}')">${n}</button>`;
+    const inp=m=='date'?`<label>Date<input type="date" value="${e(f)}" onchange="feeRcvSet('date',this.value)"></label>`:m=='range'?`<label>From<input type="date" value="${e(f)}" onchange="feeRcvSet('from',this.value)"></label><label>To<input type="date" value="${e(t)}" onchange="feeRcvSet('to',this.value)"></label>`:'';
+    const kv=(a,b)=>`<div><small>${a}</small><b>${b}</b></div>`;
+    return `<div class="card frc" id="feeRcvCard" style="margin-top:16px"><h3>Fee Received Report</h3><p style="color:var(--mu);margin:0 0 10px">See how much fee was received today, on one date, or between two dates.</p><div class="seg">${seg('today','Today')}${seg('date','Single date')}${seg('range','Date range')}</div>${inp?`<div class="tb">${inp}</div>`:''}<h4 style="margin:10px 0 6px">${e(label(f,t))}</h4><div class="kv">${kv('Total received','<span class="big">'+fm(d.tot)+'</span>')}${kv('Payments',d.rows.length)}${kv('Students paid',d.stu)}${kv('Discounts given',fm(d.disc))}</div>${Object.keys(d.by).length?`<div class="mth">${Object.keys(d.by).map(k=>`<span class="pill">${e(k)}: ${fm(d.by[k].a)} (${d.by[k].n})</span>`).join('')}</div>`:''}<div class="tb"><button class="btn" onclick="feeRcvPrint()">Print / PDF</button><button class="btn s" onclick="feeRcvExcel()">Export Excel</button></div><div class="tbw"><table><tr><th>#</th><th>Date</th><th>Student</th><th>Class</th><th>Roll</th><th>Fee for</th><th>Method</th><th>Voucher / Ref</th><th>Discount</th><th>Amount</th></tr>${d.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${fd(r.date)}</td><td>${e(r.s.name)}</td><td>${e(r.s.cls)}-${e(r.s.sec)}</td><td>${e(r.s.roll)}</td><td>${e(r.kind)}</td><td>${e(r.method)}</td><td>${e([r.vno,r.ref].filter(Boolean).join(' / ')||'-')}</td><td>${r.disc?fm(r.disc):'-'}</td><td>${fm(r.amt)}</td></tr>`).join('')||'<tr><td colspan="10">No fee received in this period.</td></tr>'}<tr><th colspan="9" style="text-align:right">Total received</th><th>${fm(d.tot)}</th></tr></table></div></div>`;
+  };
+  window.feeRcvSet=function(k,v){
+    const t=iso();
+    if(k=='mode'){R.mode=v;if(v=='date'&&!R.date)R.date=t;if(v=='range'){if(!R.from)R.from=t;if(!R.to)R.to=t}}
+    else if(v)R[k]=v;
+    const el=document.getElementById('feeRcvCard');if(el)el.outerHTML=feeRcvCard();
+  };
+  window.feeRcvExcel=function(){
+    if(!window.XLSX)return toast('Excel library not loaded (check internet)');
+    const [f,t]=range(),d=collect(f,t);
+    const rows=d.rows.map((r,i)=>({'No.':i+1,'Date':r.date,'Student Name':r.s.name,"Father's Name":r.s.father||'','Class':r.s.cls+'-'+r.s.sec,'Roll No':r.s.roll,'Fee For':r.kind,'Method':r.method,'Voucher':r.vno,'Reference':r.ref,'Discount':r.disc,'Amount':r.amt}));
+    rows.push({'Student Name':'TOTAL RECEIVED','Discount':d.disc,'Amount':d.tot});
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Fee received');
+    XLSX.writeFile(wb,'fee-received-'+f+(f==t?'':'-to-'+t)+'.xlsx');toast('Fee received report exported');
+  };
+  window.feeRcvPrint=function(){
+    const [f,t]=range(),d=collect(f,t);
+    const head=(typeof spLogoTag==='function'&&typeof spFull==='function')?`${spLogoTag()}<b style="font-size:17px">${spFull()}</b><br>`:'';
+    om(`<div class="vc" style="font-size:13px;padding:16px"><div style="text-align:center">${head}FEE RECEIVED REPORT - ${e(label(f,t))}</div><div class="kv"><div><small>Total received</small><b>${fm(d.tot)}</b></div><div><small>Payments</small><b>${d.rows.length}</b></div><div><small>Students paid</small><b>${d.stu}</b></div><div><small>Discounts</small><b>${fm(d.disc)}</b></div></div><div class="tbw"><table><tr><th>#</th><th>Date</th><th>Student</th><th>Class</th><th>Roll</th><th>Fee for</th><th>Method</th><th>Voucher</th><th>Amount</th></tr>${d.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${fd(r.date)}</td><td>${e(r.s.name)}</td><td>${e(r.s.cls)}-${e(r.s.sec)}</td><td>${e(r.s.roll)}</td><td>${e(r.kind)}</td><td>${e(r.method)}</td><td>${e(r.vno||'-')}</td><td>${fm(r.amt)}</td></tr>`).join('')||'<tr><td colspan="9">No fee received in this period.</td></tr>'}<tr><th colspan="8" style="text-align:right">Total</th><th>${fm(d.tot)}</th></tr></table></div></div><p><button class="btn" onclick="print()">Print / Save as PDF</button> <button class="btn g" onclick="cm()">Close</button></p>`);
+  };
+  const _lk=lk;lk=function(m){const h=_lk.apply(this,arguments);return m=='fees'?h+feeRcvCard():h};
+  const _rv=repsV;repsV=function(){const h=_rv.apply(this,arguments),mk='<div class="card" style="margin-top:16px"><h3>Fee Report &amp; Monthly Finance';return h.includes(mk)?h.replace(mk,()=>feeRcvCard()+mk):h+feeRcvCard()};
+
+  /* ---------- Online attendance screen ---------- */
+  const last={t:null,s:null,day:''};
+  function av(p,sz){
+    const ph=(typeof phOf==='function'?phOf(p.code):'')||'',st='width:'+sz+'px;height:'+sz+'px;';
+    if(ph)return `<img class="oa-av" style="${st}" src="${e(ph)}" alt="">`;
+    const w=String(p.name||'?').trim().split(/\s+/),ini=((w[0]||'?')[0]+(w[1]?w[1][0]:'')).toUpperCase();let h=0;for(const c of String(p.name||''))h=(h*31+c.charCodeAt(0))%360;
+    return `<span class="oa-av" style="${st}background:hsl(${h} 55% 45%);font-size:${Math.round(sz*.38)}px">${e(ini)}</span>`;
+  }
+  function items(kind){
+    const d=A[iso()]||{};
+    return allP().filter(p=>kind=='t'?p.k[0]=='B':p.k[0]=='s').map(p=>({p,r:d[p.k]||{}})).filter(x=>kind=='t'?(x.r.checkIn||x.r.checkOut):x.r.st).sort((a,b)=>(b.r.ts||0)-(a.r.ts||0)||String(a.p.name).localeCompare(String(b.p.name)));
+  }
+  onlineMarkedList=function(kind){
+    const l=items(kind);let sum;
+    if(kind=='t'){const a=l.filter(x=>x.r.checkIn).length,o=l.filter(x=>x.r.checkOut).length;sum=`<span class="pill s">Arrived ${a}</span><span class="pill o">Left ${o}</span>`}
+    else{const c=k=>l.filter(x=>x.r.st==k).length;sum=`<span class="pill s">Present ${c('Present')}</span>${c('Leave')?`<span class="pill o">Leave ${c('Leave')}</span>`:''}${c('Absent')?`<span class="pill r">Absent ${c('Absent')}</span>`:''}`}
+    const rows=l.map(x=>{
+      const p=x.p,r=x.r;
+      const st=kind=='t'?(r.checkIn?`<span class="pill s">Arrived ${e(r.checkIn)}</span>`:'')+(r.checkOut?`<span class="pill o">Left ${e(r.checkOut)}</span>`:''):`<span class="pill ${r.st=='Present'?'s':r.st=='Leave'?'o':'r'}">${e(r.st)}${r.time?' '+e(r.time):''}</span>`;
+      return `<div class="oa-row">${av(p,46)}<div class="oa-who"><b>${e(p.name)}</b><small>${e(p.sub||'')} / ${e(p.code||'')}${r.mode?' / '+e(r.mode):''}</small></div><div class="oa-st">${st}</div></div>`;
+    }).join('');
+    return `<div class="oa-lh"><b>Marked today - ${fd(iso())}</b><span class="pill">${l.length}</span>${sum}</div><div class="oa-list">${rows||'<div class="oa-empty">No attendance marked yet today.</div>'}</div>`;
+  };
+  function show(o){
+    const b=document.getElementById('lastscan');let html;
+    if(o.bad)html=`<div class="oa-res bad"><span class="oa-av" style="width:72px;height:72px;background:#ef4444;font-size:34px">!</span><div class="oa-info"><span class="oa-badge">NOT REGISTERED</span><h4>Card not recognised</h4><small>Code: ${e(o.bad)}</small></div></div>`;
+    else{
+      const {p,isStaff,out,dup,rec}=o,cls=isStaff?(out?'out':'ok'):(dup?'dup':'ok'),badge=isStaff?(out?'DEPARTED':'ARRIVED'):(dup?'ALREADY MARKED':'PRESENT'),time=isStaff?(out?rec.checkOut:rec.checkIn):rec.time;
+      const more=isStaff?`<small>Arrival <b>${e(rec.checkIn||'-')}</b> &middot; Departure <b>${e(rec.checkOut||'-')}</b></small>`:'';
+      html=`<div class="oa-res ${cls}">${av(p,88)}<div class="oa-info"><span class="oa-badge">${badge}</span><h4>${e(p.name)}</h4><small>${e(p.sub||'')} / ${e(p.code||'')}</small><div class="oa-time">${e(time||'')}<small>${e(new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}))}</small></div>${more}</div></div>`;
+    }
+    last[at.tab=='t'?'t':'s']=html;last.day=iso();
+    if(b)b.innerHTML=html;
+  }
+  const _code=code;
+  code=function(x){
+    x=String(x==null?'':x).trim();const now=Date.now();
+    if(!x||(x==cam.last&&now-cam.lt<3000))return _code.apply(this,arguments);
+    const p=allP().find(q=>q.code.toLowerCase()==x.toLowerCase()||(q.alt||'').toLowerCase()==x.toLowerCase());
+    if(!p){const r0=_code.apply(this,arguments);show({bad:x});return r0}
+    const day=iso(),b=(A[day]||{})[p.k]||{},wasPresent=b.st=='Present',isStaff=p.k[0]=='B',out=isStaff&&at.staffAction=='out';
+    const r=_code.apply(this,arguments);
+    const rec=(A[day]||{})[p.k]||{},dup=!isStaff&&wasPresent;
+    if(!dup){rec.ts=Date.now();try{saveAttendance()}catch(_){}}
+    show({p,isStaff,out,dup,rec});
+    try{updateOnlineList()}catch(_){}
+    return r;
+  };
+  onlineAttendancePopup=function(kind,keep){
+    at.tab=kind;at.mode='on';if(kind=='t'&&!at.staffAction)at.staffAction='in';
+    const isStaff=kind=='t',k=isStaff?'t':'s';
+    const idle=`<div class="oa-res idle"><span class="oa-av" style="width:72px;height:72px;background:var(--bd);color:var(--mu);font-size:30px">&#9786;</span><div class="oa-info"><b>Waiting for a scan</b><br><small>Hold an ID card in front of the camera, or type the ID below.</small></div></div>`;
+    const lastHtml=(keep&&last[k]&&last.day==iso())?last[k]:idle;
+    const seg=isStaff?`<div class="oa-seg"><button class="btn ${at.staffAction=='in'?'s':'g'}" onclick="at.staffAction='in';onlineAttendancePopup('t',1)">Arrival (check in)</button><button class="btn ${at.staffAction=='out'?'or':'g'}" onclick="at.staffAction='out';onlineAttendancePopup('t',1)">Departure (check out)</button></div>`:'';
+    om(`<div class="card oa"><div class="oa-top"><div><h3>Online ${isStaff?'Staff':'Student'} Attendance</h3><small>${e(new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}))}</small></div><div class="oa-clock" id="oaClock"></div></div>${seg}<div class="oa-grid"><div><div class="scan"><video id="cv" playsinline muted></video><div id="cmsg">Starting camera automatically...</div></div><div class="oa-in"><input id="scin" autofocus placeholder="Scan automatically, or type an ID / barcode" onkeydown="if(event.key=='Enter'){code(this.value);this.value=''}"><button class="btn" onclick="code(scin.value);scin.value=''">Process ID</button></div><div id="lastscan">${lastHtml}</div></div><div id="onlineMarked">${onlineMarkedList(kind)}</div></div><p><button class="btn g" onclick="stopCam();cm();rr()">Close scanner</button></p></div>`);
+    const tick=()=>{const c=document.getElementById('oaClock');if(!c){clearInterval(window._oaT);return}c.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
+    clearInterval(window._oaT);tick();window._oaT=setInterval(tick,1000);
+    setTimeout(()=>{const x=document.getElementById('scin');if(x)x.focus();startCam()},80);
+  };
+})();
+</script>
+<script>
+/* ===== Update: hybrid storage - local first, optional Supabase cloud sync (Settings > School Profile) ===== */
+(function(){
+  const CK='bf_cloud_cfg_v1',MAIN='bright_future_autosave_v1';
+  const isCloudKey=k=>(/^bright_future_/.test(k)&&!/_unreadable$/.test(k))||k==='bf_school_profile'||k==='bf_school_logo';
+  /* While a cloud restore is reloading the page, stop the app's own auto-save from overwriting the restored data */
+  const rawSet=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(k,v){if(window.__bfFreeze&&this===localStorage&&isCloudKey(String(k)))return;return rawSet.apply(this,arguments)};
+
+  let cfg={};try{cfg=JSON.parse(localStorage.getItem(CK)||'{}')||{}}catch(_){}
+  const persist=()=>{try{rawSet.call(localStorage,CK,JSON.stringify(cfg))}catch(_){}};
+  let busy=false;
+  const hs=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return str.length+':'+(h>>>0)};
+  const localKeys=()=>Object.keys(localStorage).filter(isCloudKey);
+  const hasLocalData=()=>{try{return S.length>0||T.length>0}catch(_){return false}};
+  const val=id=>((document.getElementById(id)||{}).value||'');
+  const fmtT=t=>new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+  function storeTok(j){cfg.access=j.access_token;cfg.refresh=j.refresh_token;cfg.exp=Date.now()+(j.expires_in||3600)*1000;persist()}
+  async function signIn(email,pw){
+    const r=await fetch(cfg.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.access_token)throw new Error('Login failed: '+(j.error_description||j.msg||j.message||('error '+r.status)));
+    storeTok(j);
+  }
+  async function token(){
+    if(cfg.access&&Date.now()<(cfg.exp||0)-60000)return cfg.access;
+    const expired='Cloud login expired. Enter your password and press "Sync with cloud".';
+    if(!cfg.refresh)throw new Error(expired);
+    const r=await fetch(cfg.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:cfg.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:cfg.refresh})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.access_token){cfg.access=cfg.refresh='';persist();throw new Error(expired)}
+    storeTok(j);return cfg.access;
+  }
+  async function rest(path,o){
+    o=o||{};const tk=await token();
+    const r=await fetch(cfg.url+path,{method:o.method||'GET',headers:Object.assign({apikey:cfg.key,Authorization:'Bearer '+tk,'Content-Type':'application/json'},o.extra||{}),body:o.body==null?undefined:JSON.stringify(o.body)});
+    if(!r.ok){
+      const j=await r.json().catch(()=>({})),m=String(j.message||j.hint||j.error||'');
+      if(r.status===404||/school_sync/.test(m)&&/(find|exist)/i.test(m))throw new Error('Cloud table not found. Run the setup SQL shown below in Supabase first.');
+      if(r.status===401||r.status===403)throw new Error('Cloud access denied. Check the account and the setup SQL (policy).');
+      throw new Error(m||('Cloud error '+r.status));
+    }
+    const t=await r.text();return t?JSON.parse(t):null;
+  }
+
+  async function push(force){
+    if(busy)return;busy=true;status();
+    try{
+      const h=Object.assign({},cfg.h||{}),ts=new Date().toISOString(),rows=[];
+      localKeys().forEach(k=>{const v=localStorage.getItem(k);if(v==null)return;const x=hs(v);if(force||h[k]!==x)rows.push({id:k,value:v,x})});
+      for(const r of rows){
+        await rest('/rest/v1/school_sync?on_conflict=id',{method:'POST',body:[{id:r.id,value:r.value,updated_at:ts}],extra:{Prefer:'resolution=merge-duplicates,return=minimal'}});
+        h[r.id]=r.x;cfg.h=h;persist();
+      }
+      if(rows.length){cfg.stamp=ts;cfg.last=Date.now()}else if(!cfg.last)cfg.last=Date.now();
+      cfg.err='';persist();
+    }catch(e){cfg.err=e.message||String(e);persist()}
+    finally{busy=false;status()}
+  }
+  async function cloudNewer(){
+    const j=await rest('/rest/v1/school_sync?select=updated_at&order=updated_at.desc&limit=1');
+    const mx=j&&j[0]?Date.parse(j[0].updated_at):0;
+    return !!cfg.stamp&&mx>Date.parse(cfg.stamp)+1000;
+  }
+  async function checkConflict(){
+    if(!cfg.enabled||cfg.conflict||busy||!navigator.onLine)return;
+    try{if(await cloudNewer()){cfg.conflict=true;persist();status()}}catch(_){}
+  }
+  async function tick(){
+    if(!cfg.enabled||cfg.conflict||busy||!navigator.onLine)return;
+    const h=cfg.h||{};let dirty=false;
+    for(const k of localKeys()){const v=localStorage.getItem(k);if(v!=null&&h[k]!==hs(v)){dirty=true;break}}
+    if(dirty)await push(false);
+  }
+
+  async function restore(skipAsk){
+    try{
+      const pw=val('cs_pw');
+      if(pw){cfg.url=val('cs_url').trim().replace(/\/+$/,'')||cfg.url;cfg.key=val('cs_key').trim()||cfg.key;cfg.email=val('cs_email').trim()||cfg.email;await signIn(cfg.email,pw)}
+      if(!cfg.url||!cfg.key)return toast('Enter the Supabase URL and key first');
+      const rows=((await rest('/rest/v1/school_sync?select=id,value,updated_at'))||[]).filter(r=>isCloudKey(r.id)&&r.value!=null);
+      if(!rows.length)return toast('Nothing is saved in the cloud yet');
+      if(!skipAsk&&!confirm('Replace the data on this device with the cloud copy? The data currently on this device will be overwritten.'))return;
+      window.__bfFreeze=true;
+      const h={};let mx=0;
+      rows.forEach(r=>{rawSet.call(localStorage,r.id,r.value);h[r.id]=hs(r.value);mx=Math.max(mx,Date.parse(r.updated_at)||0)});
+      cfg.h=h;cfg.stamp=new Date(mx||Date.now()).toISOString();cfg.enabled=true;cfg.conflict=false;cfg.err='';cfg.last=Date.now();persist();
+      toast('Cloud data restored. Reloading...');setTimeout(()=>location.reload(),700);
+    }catch(e){cfg.err=e.message||String(e);persist();status();toast(cfg.err)}
+  }
+  async function connect(){
+    const url=val('cs_url').trim().replace(/\/+$/,''),key=val('cs_key').trim(),email=val('cs_email').trim(),pw=val('cs_pw');
+    if(!/^https:\/\/.+/.test(url))return toast('Enter the Supabase Project URL (https://...supabase.co)');
+    if(!key)return toast('Enter the Supabase anon (public) key');
+    if(!email)return toast('Enter the cloud account email');
+    if(!pw&&!cfg.refresh)return toast('Enter the cloud account password');
+    try{
+      cfg.url=url;cfg.key=key;cfg.email=email;persist();
+      if(pw)await signIn(email,pw);
+      const rows=(await rest('/rest/v1/school_sync?select=id'))||[],cloudHas=rows.some(r=>r.id===MAIN);
+      if(cloudHas&&!hasLocalData()){
+        if(confirm('This device has no data, but the cloud has a saved copy.\n\nOK = download the cloud data to this device.\nCancel = keep this device empty and stop.'))return restore(true);
+        return;
+      }
+      if(cloudHas&&!confirm('The cloud already has saved data.\n\nOK = replace the cloud copy with the data on this device.\nCancel = do nothing (use "Restore from cloud" to get the cloud data instead).'))return;
+      cfg.enabled=true;cfg.conflict=false;cfg.h={};cfg.err='';persist();
+      const el=document.getElementById('cs_pw');if(el)el.value='';
+      await push(true);
+      if(!cfg.err)toast('Cloud sync is ON. Changes are saved automatically.');
+    }catch(e){cfg.err=e.message||String(e);persist();status();toast(cfg.err)}
+  }
+  function stop(){cfg.enabled=false;persist();status();toast('Auto-sync stopped. Data stays saved on this device.')}
+
+  function status(){
+    const el=document.getElementById('csStatus');if(!el)return;
+    let t,c='var(--mu)';
+    if(!cfg.enabled&&cfg.err){t=cfg.err;c='var(--rd)'}
+    else if(!cfg.enabled){t='Not syncing. Data is saved on this device only.'}
+    else if(cfg.conflict){t='The cloud has newer data from another device. Auto-sync is paused. Press "Restore from cloud" to get it, or "Sync with cloud" to overwrite it with this device.';c='var(--or)'}
+    else if(cfg.err){t=cfg.err;c='var(--rd)'}
+    else if(busy){t='Syncing...'}
+    else if(!navigator.onLine){t='Offline. Changes are kept on this device and will sync when you are online.'}
+    else{t='Auto-sync is ON'+(cfg.last?'. Last synced: '+fmtT(cfg.last):'.');c='var(--gr)'}
+    el.style.color=c;el.textContent=t;
+    const b=document.getElementById('csStop');if(b)b.style.display=cfg.enabled?'':'none';
+    const n=document.getElementById('csNow');if(n)n.style.display=cfg.enabled?'':'none';
+  }
+  const SQL="create table if not exists public.school_sync (\n  id text primary key,\n  value text,\n  updated_at timestamptz not null default now()\n);\nalter table public.school_sync enable row level security;\ncreate policy \"school sync access\" on public.school_sync\n  for all to authenticated using (true) with check (true);";
+  window.csCard=function(){
+    return `<div class="card" id="csCard" style="margin-top:16px"><h3>Cloud Sync (Supabase)</h3><p style="color:var(--mu);margin:0 0 10px">Your data is always saved on this device first. Press <b>Sync with cloud</b> once and every change is also saved to your Supabase cloud automatically.</p><div class="fm"><label>Supabase Project URL<input id="cs_url" value="${e(cfg.url||'')}" placeholder="https://xxxx.supabase.co" autocomplete="off"></label><label>Anon (public) key<input id="cs_key" value="${e(cfg.key||'')}" placeholder="eyJ..." autocomplete="off"></label><label>Cloud account email<input id="cs_email" type="email" value="${e(cfg.email||'')}" placeholder="you@example.com" autocomplete="off"></label><label>Cloud account password<input id="cs_pw" type="password" placeholder="Needed only when connecting" autocomplete="new-password"></label></div><div class="tb"><button class="btn" onclick="csConnect()">Sync with cloud</button><button class="btn s" id="csNow" onclick="csNow()" style="display:none">Sync now</button><button class="btn g" onclick="csRestore()">Restore from cloud</button><button class="btn g" id="csStop" onclick="csStop()" style="display:none">Stop auto-sync</button></div><p id="csStatus" style="margin:6px 0;font-weight:600"></p><details><summary style="cursor:pointer;font-weight:700">First-time setup in Supabase</summary><ol style="color:var(--mu);line-height:1.6"><li>Create a project at supabase.com. Copy the <b>Project URL</b> and the <b>anon public key</b> (Project Settings &rarr; API).</li><li>Open <b>SQL Editor</b>, paste the SQL below and run it.</li><li>Open <b>Authentication &rarr; Users</b>, add a user with an email and password (this is the cloud account above). Then turn off public sign-ups in Authentication settings.</li></ol><pre id="csSql" style="white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:12px;user-select:all">${e(SQL)}</pre><button class="btn g" onclick="csCopy()">Copy SQL</button></details></div>`;
+  };
+  window.csConnect=connect;window.csRestore=()=>restore(false);window.csStop=stop;
+  window.csNow=()=>{if(cfg.conflict)return toast('Resolve the cloud conflict first (Restore from cloud, or Sync with cloud to overwrite)');push(true)};
+  window.csCopy=()=>{try{navigator.clipboard.writeText(SQL).then(()=>toast('SQL copied'),()=>toast('Select the SQL and copy it'))}catch(_){toast('Select the SQL and copy it')}};
+
+  /* add the card to Settings > School Profile */
+  const _p=AC_PAGES.schoolprofile;
+  AC_PAGES.schoolprofile=function(){return _p.apply(this,arguments)+csCard()};
+  const _go=go;go=function(){const r=_go.apply(this,arguments);setTimeout(status,0);return r};
+  const _gs=goSub;goSub=function(){const r=_gs.apply(this,arguments);setTimeout(status,0);return r};
+
+  setInterval(tick,6000);
+  setInterval(checkConflict,60000);
+  setTimeout(checkConflict,4000);
+  window.addEventListener('online',()=>{status();tick()});
+  window.addEventListener('offline',status);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)tick()});
 })();
 </script>
 </body></html>
